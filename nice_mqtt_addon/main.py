@@ -109,7 +109,6 @@ def on_mqtt_connect(client, userdata, flags, reason_code, properties):
     if reason_code == 0:
         logger.info(f"Connected to MQTT Broker successfully (Code: {reason_code})")
         client.subscribe(TOPIC_CMD)
-
         cover_config = {
             "name": DEVICE_NAME,
             "unique_id": f"{DEVICE_ID}_cover",
@@ -129,26 +128,43 @@ def on_mqtt_connect(client, userdata, flags, reason_code, properties):
         }
         client.publish(f"homeassistant/cover/{DEVICE_ID}/config", json.dumps(cover_config), retain=True)
 
-        button_config = {
-            "name": "Partial Opening 1",
-            "unique_id": f"{DEVICE_ID}_partial_1",
-            "icon": "mdi:gate-arrow-right",
-            "command_topic": TOPIC_CMD,
-            "payload_press": "PARTIAL_1",
-            "availability_topic": TOPIC_AVAIL,
-            "device": {
-                "identifiers": [DEVICE_ID],
-                "name": "Nice IT4WIFI Gate",
-                "manufacturer": "Nice",
-                "model": "IT4WIFI"
-            }
+        exclude_commands = ["OPEN", "CLOSE", "STOP"]
+        icon_map = {
+            "STEP_BY_STEP": "mdi:debug-step-over",
+            "PARTIAL_1": "mdi:gate-arrow-right",
+            "BLOCK": "mdi:lock",
+            "RELEASE": "mdi:lock-open",
+            "COURTESY_TOGGLE": "mdi:lightbulb"
         }
-        client.publish(f"homeassistant/button/{DEVICE_ID}_partial_1/config", json.dumps(button_config), retain=True)
+
+        for command_key in COMMAND_MAP:
+            if command_key in exclude_commands:
+                continue
+            
+            readable_name = command_key.replace("_", " ").title()
+            safe_slug = command_key.lower()
+
+            button_config = {
+                "name": f"{readable_name}",
+                "unique_id": f"{DEVICE_ID}_btn_{safe_slug}",
+                "command_topic": TOPIC_CMD,
+                "payload_press": command_key,
+                "availability_topic": TOPIC_AVAIL,
+                "icon": icon_map.get(command_key, "mdi:gesture-tap-button"),
+                "device": {
+                    "identifiers": [DEVICE_ID],
+                    "name": "Nice IT4WIFI Gate",
+                    "manufacturer": "Nice",
+                    "model": "IT4WIFI"
+                }
+            }
+            topic_config = f"homeassistant/button/{DEVICE_ID}_{safe_slug}/config"
+            client.publish(topic_config, json.dumps(button_config), retain=True)
+            logger.info(f"Published discovery for button: {readable_name}")
 
         client.publish(TOPIC_AVAIL, "online", retain=True)
     else:
         logger.error(f"Failed to connect to MQTT Broker. Reason code: {reason_code}")
-
 
 def on_mqtt_message(client, userdata, msg):
     payload = msg.payload.decode().upper()

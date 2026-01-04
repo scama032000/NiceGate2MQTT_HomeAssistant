@@ -2,4 +2,4 @@
 # Changelog
 
 ### Changed
-- Added function to stop the addon at the end of pairing process
+- Added buttons for all T4 commands in MQTT discovery
