@@ -20,11 +20,11 @@ BACKOFF_FACTOR = 2
 class NiceGateApi:
     """API Standalone per Nice IT4WIFI."""
 
-    def __init__(self, host: str, mac: str, username: str, pwd: str, on_status_callback: Callable[[str], None] = None):
+    def __init__(self, host: str, mac: str, pwd: str, on_status_callback: Callable[[str], None] = None):
         self.host = host
         self.target = mac
-        self.source = "homeassistant"
-        self.username = username
+        self.source = "android"
+        self.username = "homeassisstant"
         self.descr = ""
         self.pwd = pwd
         self.on_status_callback = on_status_callback 
