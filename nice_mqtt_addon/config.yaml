@@ -1,0 +1,32 @@
+name: "Nice Gate Custom Bridge"
+version: "1.0.0"
+slug: "nice_gate_custom"
+description: "Custom Bridge for Nice Gate devices"
+arch:
+  - aarch64
+  - amd64
+  - armv7
+startup: application
+boot: auto
+map:
+  - config:rw
+init: false
+options:
+  mqtt_broker: "core-mosquitto"
+  mqtt_port: 1883
+  mqtt_user: ""
+  mqtt_pass: ""
+  nice_host: ""
+  nice_mac: ""
+  setup_code: ""
+  nice_pwd: ""
+
+schema:
+  mqtt_broker: str
+  mqtt_port: int
+  mqtt_user: str
+  mqtt_pass: password
+  nice_host: str
+  nice_mac: str
+  setup_code: str
+  nice_pwd: password
