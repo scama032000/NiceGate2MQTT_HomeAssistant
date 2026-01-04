@@ -73,10 +73,11 @@ class NiceGateApi:
         if self.username is None or self.username == "":
             return None
         try:
-            ctx = ssl.SSLContext(ssl.PROTOCOL_TLS)
+            ctx = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
             ctx.check_hostname = False
-            ctx.options |= 0x4  # ssl.OP_LEGACY_SERVER_CONNECT
-
+            ctx.verify_mode = ssl.CERT_NONE
+            ctx.set_ciphers("ALL:@SECLEVEL=0")
+            ctx.options |= 0x4
             await asyncio.sleep(0.01)
             reader, writer = await asyncio.open_connection(self.host, 443, ssl=ctx)
 
