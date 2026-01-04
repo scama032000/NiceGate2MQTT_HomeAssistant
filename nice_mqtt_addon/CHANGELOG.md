@@ -2,4 +2,4 @@
 # Changelog
 
 ### Changed
-- Added missing function
+- Fixing error in connection handling (PAIRING)

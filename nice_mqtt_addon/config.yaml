@@ -1,5 +1,5 @@
 name: "Nice Gate Custom Bridge"
-version: "1.0.3"
+version: "1.0.4"
 slug: "nice_gate_custom"
 description: "Custom Bridge for Nice Gate devices"
 arch:

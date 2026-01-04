@@ -90,6 +90,10 @@ class NiceGateApi:
             ctx.options |= 0x4
             await asyncio.sleep(0.01)
             reader, writer = await asyncio.open_connection(self.host, 443, ssl=ctx)
+            
+            # Assign to instance variables so __recvall() can access them
+            self.serv_reader = reader
+            self.serv_writer = writer
 
             msg = self.__build_message(
                 'PAIR',
@@ -99,7 +103,7 @@ class NiceGateApi:
             )
             writer.write(msg)
             await writer.drain()
-            pair = await self.__recvall()  # Removed reader argument
+            pair = await self.__recvall()
             match = re.search(r'<Authentication\s+id=[\'"]?([^\'" >]+)[\'"]?\s+username=[\'"]?([^\'" >]+)[\'"]?\s+pwd=[\'"]?([^\'" >]+)[\'"]?', pair)
             if match:
                 self.pwd = match.groups()[2]
@@ -116,7 +120,11 @@ class NiceGateApi:
             _LOGGER.error(ex, exc_info=True)
 
         if writer is not None:
-            await writer.close()  # Ensure to await the close
+            try:
+                writer.close()
+                await writer.wait_closed()
+            except Exception as e:
+                _LOGGER.warning(f"Error closing writer: {e}")
 
         return self.pwd
     
