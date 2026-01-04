@@ -67,6 +67,16 @@ class NiceGateApi:
         await self.disconnect()
 
 
+    def __get_setup_code_check(self, setup_code: str) -> str:
+        client_challenge = self.__hex_to_bytearray(self.client_challenge)
+        setup_code_check = (
+            bytes(setup_code, "utf-8")
+            + client_challenge[::-1]
+            + bytes("Nice4U", "utf-8")
+        )
+        crc32 = binascii.crc32(setup_code_check) & 0xFFFFFFFF
+        return f"{crc32:08X}"
+    
     async def pair(self, setup_code:str)->str:
         self.pwd = None
         writer = None
