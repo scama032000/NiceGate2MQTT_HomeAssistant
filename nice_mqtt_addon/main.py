@@ -213,9 +213,9 @@ async def main():
                 logger.info(f"New password: {paired_pwd}")
             else:
                 logger.error("Pairing failed, cannot proceed without a password.")
-                return
+                sys.exit(1)
             logger.info("Paired successfully, now the addon will stop. Please authorize the new user in the NiceWelcome app and restart the addon.")
-            return
+            sys.exit(0)
         await api_instance.start()
 
         while True:
