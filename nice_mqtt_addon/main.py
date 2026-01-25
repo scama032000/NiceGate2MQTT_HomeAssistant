@@ -71,7 +71,7 @@ STATUS_MAP = {
     "open": "open",
     "closing": "closing",
     "opening": "opening",
-    "stopped": "stopped"
+    "stopped": "open" #stopped does not exists
 }
 
 COMMAND_MAP = {
